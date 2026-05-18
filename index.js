@@ -2,6 +2,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 const ws = require('ws');
 const Usuario = require('./src/models/user');
+const Sala = require('./src/models/sala');
+
 
 let server = new ws.Server({ port: 3001 });
 
@@ -49,6 +51,7 @@ server.on('connection', (client) => {
             message: 'Usuário já existe',
           }),
         );
+        console.log("\x1b[31m Usuário já existe :( \x1b[0m");
       } else {
         let user = await Usuario.create({
           usuario: usuario,
@@ -59,7 +62,42 @@ server.on('connection', (client) => {
       }
     } else if (msgObject.action == 'logar') {
       const { usuario, senha } = msgObject;
+      console.log(usuario)
+      console.log(senha)
+      const user = await Usuario.findOne({
+        where: {
+          usuario: usuario,
+          senha: senha,
+        },
+      });
       
+      console.log("se tiver vivo diga \x1b[32m\"oi\"\x1b[0m");
+      console.log(user);
+      
+      if (user) {
+        
+        users[usuario] = client;
+        
+        client.send(
+          JSON.stringify({
+            action: 'logar',
+            success: true,
+            usuario: user.usuario,
+            telefone: user.telefone,
+            message: 'Login realizado com sucesso',
+          }),
+        );
+
+        console.log(`Usuário ${usuario} logado`);
+      } else {
+        client.send(
+          JSON.stringify({
+            action: 'logar',
+            success: false,
+            message: 'Usuário ou senha inválidos',
+          }),
+        );
+      }
     }
   });
 });

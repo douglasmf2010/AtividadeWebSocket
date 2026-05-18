@@ -32,8 +32,8 @@ function logar() {
 
         let obj = {
             action: 'logar',
-            usuario: user.value,
-            senha: senha.value,
+            usuario: document.getElementById("user-login").value,
+            senha: document.getElementById("senha-login").value
         };
 
         server.send(JSON.stringify(obj));

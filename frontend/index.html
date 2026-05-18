@@ -1,62 +1,161 @@
 <!doctype html>
 <html lang="pt-br">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="sock-connection.js" defer></script>
     <script src="interface.js" defer></script>
     <style>
-        .hidden {
-            display: none;
-        }
+      .hidden {
+        display: none;
+      }
+      .chat-container {
+        display: flex;
+        gap: 20px;
+        margin-top: 30px;
+      }
+
+      .chat-box,
+      .users-box {
+        border: 2px solid black;
+        padding: 10px;
+        height: 400px;
+      }
+
+      .chat-box {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .users-box {
+        width: 30%;
+      }
+
+      .messages {
+        flex: 1;
+        border: 1px solid gray;
+        margin-bottom: 10px;
+        padding: 10px;
+        overflow-y: scroll;
+      }
+
+      .send-area {
+        display: flex;
+        gap: 10px;
+      }
+
+      .send-area input {
+        flex: 1;
+        padding: 5px;
+      }
+
+      .users-list {
+        border: 1px solid gray;
+        height: 330px;
+        padding: 10px;
+        overflow-y: scroll;
+      }
+      .plus-btn {
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: 50%;
+        background-color: #28a745;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        transition: 0.2s;
+      }
+
+      .plus-btn:hover {
+        background-color: #218838;
+        transform: scale(1.1);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="cadastro">
-        <h1>Cadastro</h1>
-        <br />
-        <h3>Úsuario</h3>
-        <input type="text" id="user" />
-        <h3>Telefone</h3>
-        <input type="text" id="telefone" />
-        <h3>Senha</h3>
-        <input type="text" id="senha" />
-        <br />
-        <br />
-        <button id="cadastrar" onclick="cadastrar()">Cadastrar</button>
-        <br />
-        <a onclick="trocarDiv()">Já tenho uma conta</a>
+      <h1>Cadastro</h1>
+      <br />
+      <h3>Úsuario</h3>
+      <input type="text" id="user" />
+      <h3>Telefone</h3>
+      <input type="text" id="telefone" />
+      <h3>Senha</h3>
+      <input type="text" id="senha" />
+      <br />
+      <br />
+      <button id="cadastrar" onclick="cadastrar()">Cadastrar</button>
+      <br />
+      <a onclick="trocarDiv()">Já tenho uma conta</a>
     </div>
+
     <div id="login" style="display: none">
-        <h1>login</h1>
-        <br />
-        <h3>Úsuario</h3>
-        <input type="text" id="user" />
-        <h3>Senha</h3>
-        <input type="text" id="senha" />
-        <br />
-        <br />
-        
-        <br />
-        <button id="logar" onclick="logar()">Logar</button>
-        <br />
-        <a onclick="trocarDiv()">Não tenho uma senha</a>
-        <br />
+      <h1>login</h1>
+      <br />
+      <h3>Úsuario</h3>
+      <input type="text" id="user-login" />
+      <h3>Senha</h3>
+      <input type="text" id="senha-login" />
+      <br />
+      <br />
+      <br />
+      <button id="logar" onclick="logar()">Logar</button>
+      <br />
+      <a onclick="trocarDiv()">Não tenho uma senha</a>
     </div>
+
+    <div class="chat-container">
+      <!-- Quadrado da esquerda -->
+      <div class="chat-box">
+        <h2>Chat</h2>
+
+        <div class="messages" id="messages">
+          <!-- mensagens aparecem aqui -->
+        </div>
+
+        <div class="send-area">
+          <input type="text" id="mensagem" placeholder="Digite uma mensagem" />
+          <button onclick="enviarMensagem()">Enviar</button>
+        </div>
+      </div>
+
+      <!-- Quadrado da direita -->
+      <div class="users-box">
+        <h4>Criar Sala</h4>
+        <button class ="plus-btn" id="CriarSala" onclick="CriarSala()">+</button>
+        <h2>Usuários</h2>
+
+        <div class="users-list" id="users-list">
+          <!-- usuários aparecem aqui -->
+        </div>
+      </div>
+    </div>
+
+    <br />
     <button onclick="serverConnect()" id="connect">Conectar</button>
+    
     <script>
-        function trocarDiv() {
-            const cadastrar = document.getElementById('cadastro');
-            const logar = document.getElementById('login');
-            if (cadastrar.style.display === 'none') {
-                cadastrar.style.display = 'block';
-                logar.style.display = 'none';
-            } else {
-                cadastrar.style.display = 'none';
-                logar.style.display = 'block';
-            }
+      function trocarDiv() {
+        const cadastrar = document.getElementById('cadastro');
+        const logar = document.getElementById('login');
+        if (cadastrar.style.display === 'none') {
+          cadastrar.style.display = 'block';
+          logar.style.display = 'none';
+        } else {
+          cadastrar.style.display = 'none';
+          logar.style.display = 'block';
         }
-        </script>
-</body>
+      }
+    </script>
+  </body>
 </html>
