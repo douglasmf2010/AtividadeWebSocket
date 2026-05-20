@@ -4,10 +4,15 @@ const ws = require('ws');
 const Usuario = require('./src/models/user');
 const Sala = require('./src/models/sala');
 
-
 let server = new ws.Server({ port: 3001 });
 
 let users = {};
+let salas = {};
+Sala.findAll({}).then((data) => {
+  for (let i = 0; i < data.length; i++) {
+    salas[data[i].nome] = [];
+  }
+});
 
 server.on('connection', (client) => {
   client.on('close', () => {});
@@ -51,7 +56,7 @@ server.on('connection', (client) => {
             message: 'Usuário já existe',
           }),
         );
-        console.log("\x1b[31m Usuário já existe :( \x1b[0m");
+        console.log('\x1b[31m Usuário já existe :( \x1b[0m');
       } else {
         let user = await Usuario.create({
           usuario: usuario,
@@ -62,22 +67,21 @@ server.on('connection', (client) => {
       }
     } else if (msgObject.action == 'logar') {
       const { usuario, senha } = msgObject;
-      console.log(usuario)
-      console.log(senha)
+      console.log(usuario);
+      console.log(senha);
       const user = await Usuario.findOne({
         where: {
           usuario: usuario,
           senha: senha,
         },
       });
-      
-      console.log("se tiver vivo diga \x1b[32m\"oi\"\x1b[0m");
+
+      console.log('se tiver vivo diga \x1b[32m"oi"\x1b[0m');
       console.log(user);
-      
+
       if (user) {
-        
         users[usuario] = client;
-        
+
         client.send(
           JSON.stringify({
             action: 'logar',
@@ -89,6 +93,16 @@ server.on('connection', (client) => {
         );
 
         console.log(`Usuário ${usuario} logado`);
+        let salastemp = [];
+        for (const key in salas) {
+          salastemp.push(key);
+        }
+        client.send(
+          JSON.stringify({
+            action: 'atualizarsala',
+            salas: salastemp,
+          }),
+        );
       } else {
         client.send(
           JSON.stringify({
@@ -97,6 +111,42 @@ server.on('connection', (client) => {
             message: 'Usuário ou senha inválidos',
           }),
         );
+      }
+    } else if (msgObject.action == 'criarsalas') {
+      const { nome } = msgObject;
+
+      const sala = await Sala.findOne({
+        where: {
+          nome: nome,
+        },
+      });
+      if (sala) {
+        client.send(
+          JSON.stringify({
+            action: 'criarsalas',
+            success: false,
+            message: 'Sala já existe',
+          }),
+        );
+        console.log('\x1b[31m A Sala já existe :( \x1b[0m');
+      } else {
+        let sala = await Sala.create({
+          nome: nome,
+        });
+        await sala.save();
+        salas[sala.nome] = [];
+        let salastemp = [];
+        for (const key in salas) {
+          salastemp.push(key);
+        }
+        for (const username in users) {
+          users[username].send(
+            JSON.stringify({
+              action: 'atualizarsala',
+              salas: salastemp,
+            }),
+          );
+        }
       }
     }
   });

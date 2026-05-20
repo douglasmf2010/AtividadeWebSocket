@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="sock-connection.js" defer></script>
-    <script src="interface.js" defer></script>
     <style>
       .hidden {
         display: none;
@@ -52,11 +51,15 @@
         padding: 5px;
       }
 
-      .users-list {
+      .list {
         border: 1px solid gray;
-        height: 330px;
+        height: 100px;
         padding: 10px;
         overflow-y: scroll;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
       }
       .plus-btn {
         width: 30px;
@@ -80,10 +83,28 @@
         background-color: #218838;
         transform: scale(1.1);
       }
+      .criar-sala-topo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .salas {
+        width: 80%;
+        /* padding: 10px; */
+        border: none;
+        /* border-radius: 8px; */
+        background-color: #e7e7e7;
+        /* color: rgb(230, 230, 230); */
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .salas:hover {
+        background-color: #c0c0c0;
+      }
     </style>
   </head>
   <body>
-    <div id="cadastro">
+    <div id="cadastro" style="display: none">
       <h1>Cadastro</h1>
       <br />
       <h3>Úsuario</h3>
@@ -99,7 +120,7 @@
       <a onclick="trocarDiv()">Já tenho uma conta</a>
     </div>
 
-    <div id="login" style="display: none">
+    <div id="login" >
       <h1>login</h1>
       <br />
       <h3>Úsuario</h3>
@@ -111,8 +132,10 @@
       <br />
       <button id="logar" onclick="logar()">Logar</button>
       <br />
-      <a onclick="trocarDiv()">Não tenho uma senha</a>
+      <a onclick="trocarDiv()">Não tenho uma conta</a>
     </div>
+    <br />
+    <button onclick="serverConnect()" id="connect">Conectar</button>
 
     <div class="chat-container">
       <!-- Quadrado da esquerda -->
@@ -128,32 +151,36 @@
           <button onclick="enviarMensagem()">Enviar</button>
         </div>
       </div>
-
+      
       <!-- Quadrado da direita -->
       <div class="users-box">
-        <h4>Criar Sala</h4>
-        <button class ="plus-btn" id="CriarSala" onclick="CriarSala()">+</button>
+        <div class="criar-sala-topo">
+          <!-- criar sala -->
+          <h4>Criar Sala</h4>
+          <button class="plus-btn" id="CriarSala" onclick="criarSala()">
+            +
+          </button>
+        </div>
+        <div class="list" id="salas-list"></div>
+        <!-- usuários aparecem aqui -->
         <h2>Usuários</h2>
-
-        <div class="users-list" id="users-list">
+        <div class="list" id="users-list">
           <!-- usuários aparecem aqui -->
         </div>
       </div>
     </div>
 
-    <br />
-    <button onclick="serverConnect()" id="connect">Conectar</button>
-    
     <script>
       function trocarDiv() {
         const cadastrar = document.getElementById('cadastro');
         const logar = document.getElementById('login');
-        if (cadastrar.style.display === 'none') {
-          cadastrar.style.display = 'block';
-          logar.style.display = 'none';
-        } else {
+        if (logar.style.display === 'none') {
           cadastrar.style.display = 'none';
           logar.style.display = 'block';
+        } else {
+          cadastrar.style.display = 'block';
+          logar.style.display = 'none';
+          
         }
       }
     </script>
