@@ -27,12 +27,11 @@ server.on('connection', (client) => {
     } else if (msgObject.action == 'disconnect') {
       delete users[msgObject.user];
     } else if (msgObject.action == 'message') {
-      const { sender, receiver, message } = msgObject;
+      const { sender, message, sala } = msgObject;
       console.log(msgObject);
-      console.log(users[receiver]);
 
-      if (users[receiver] !== undefined) {
-        users[receiver].send(
+      for (let username in salas[sala]) {
+        salas[sala][username].send(
           JSON.stringify({
             action: 'message',
             sender: sender,
@@ -147,6 +146,37 @@ server.on('connection', (client) => {
             }),
           );
         }
+      }
+    } else if (msgObject.action == 'atualizaruser') {
+      const { sala } = msgObject;
+      let listuser = [];
+
+      for (let username in salas[sala]) {
+        listuser.push(username);
+      }
+      for (let username in salas[sala]) {
+        salas[sala][username].send(
+          JSON.stringify({
+            action: 'atualizaruser',
+            users: listuser,
+          }),
+        );
+      }
+    } else if (msgObject.action == 'entrarSala') {
+      const { sala, user } = msgObject;
+      salas[sala][user] = client;
+      let listuser = [];
+
+      for (let username in salas[sala]) {
+        listuser.push(username);
+      }
+      for (let username in salas[sala]) {
+        salas[sala][username].send(
+          JSON.stringify({
+            action: 'atualizaruser',
+            users: listuser,
+          }),
+        );
       }
     }
   });
